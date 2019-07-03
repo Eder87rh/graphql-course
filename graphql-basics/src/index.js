@@ -2,12 +2,48 @@ import { GraphQLServer } from 'graphql-yoga';
 
 // Scalar types - String, Boolean, Int, Float, ID
 
+// Demo User Data
+const users = [{
+  id: '1',
+  name: "Eder",
+  eder: "eder@example.com",
+  age: 31
+}, {
+  id: '2',
+  name: "Sarah",
+  eder: "sarah@example.com"
+}, {
+  id: '3',
+  name: "Mike",
+  eder: "mike@example.com"
+}];
+
+// Demo Posts Data
+const posts = [{
+  id: "1",
+  title: "Titulo 1",
+  body: "Post Perrón",
+  published: true,
+  author: "1"
+}, {
+  id: "2",
+  title: "Titulo 2",
+  body: "Otro Perrón",
+  published: true,
+  author: "2"
+}, {
+  id: "3",
+  title: "Titulo 3",
+  body: "Sin comentarios",
+  published: false,
+  author: "3"
+}];
 
 // Type definitions (schema)
 const typeDefs = `
   type Query {
-    greeting(name: String, position: String): String!
-    add(a: Float!, b:Float!):Float!
+    users(query: String): [User!]!
+    posts(query: String):[Post!]!
     me: User!
     getPost: Post!
   }
@@ -24,20 +60,28 @@ const typeDefs = `
     title: String!
     body: String!
     published: Boolean!
+    author: User
   }
 `;
 
 // Resolvers
 const resolvers = {
   Query: {
-    add(parent, { a, b }, context, info) {
-      return a + b;
-    },
-    greeting(parent, { name, position }, ctx, info) {
-      if (name && position) {
-        return `Hello, ${name} You are my favorite ${position}`;
+    users(parent, { query }, ctx, info) {
+      if (query) {
+        return users.filter((user) => user.name.toLowerCase().includes(query.toLowerCase()))
       } else {
-        return "Hello!";
+        return users;
+      }
+    },
+    posts(parent, { query }, ctx, info) {
+      if (query) {
+        return posts.filter(({ title, body }) => { 
+          return  title.toLowerCase().includes(query.toLowerCase()) || 
+                  body.toLowerCase().includes(query.toLowerCase())
+        });
+      } else {
+        return posts;
       }
     },
     me() {
@@ -54,6 +98,13 @@ const resolvers = {
         body: "Hello World",
         published: false
       }
+    }
+  },
+  Post: {
+    author(parent, args, ctx, info) {
+      return users.find(user => {
+        return user.id === parent.author;
+      });
     }
   }
 }
