@@ -6,31 +6,54 @@ import { GraphQLServer } from 'graphql-yoga';
 // Type definitions (schema)
 const typeDefs = `
   type Query {
+    greeting(name: String, position: String): String!
+    add(a: Float!, b:Float!):Float!
+    me: User!
+    getPost: Post!
+  }
+
+  type User {
+    id: ID!
+    name: String!
+    email: String!
+    age: Int
+  }
+
+  type Post {
+    id: ID!
     title: String!
-    price: Float!
-    relaseYear: Int
-    rating: Float
-    inStock: Boolean!
+    body: String!
+    published: Boolean!
   }
 `;
 
 // Resolvers
 const resolvers = {
   Query: {
-    title () {
-      return "Audio system 5.1";
+    add(parent, { a, b }, context, info) {
+      return a + b;
     },
-    price () {
-      return 4299.98;
+    greeting(parent, { name, position }, ctx, info) {
+      if (name && position) {
+        return `Hello, ${name} You are my favorite ${position}`;
+      } else {
+        return "Hello!";
+      }
     },
-    relaseYear () {
-      return 2015;
+    me() {
+      return {
+        id: '123098',
+        name: "Mike",
+        email: "mike@example.com"
+      }
     },
-    rating () {
-      return 4.5;
-    },
-    inStock () {
-      return true;
+    getPost() {
+      return {
+        id: "123456789",
+        title: "Hi!",
+        body: "Hello World",
+        published: false
+      }
     }
   }
 }
