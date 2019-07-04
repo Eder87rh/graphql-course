@@ -144,9 +144,7 @@ const resolvers = {
 
       const user = {
         id: uuidv4(),
-        name: args.name,
-        email: args.email,
-        age: args.age
+        ...args
       };
 
       users.push(user);
@@ -162,19 +160,16 @@ const resolvers = {
 
       const post = {
         id: uuidv4(),
-        title: args.title,
-        body: args.body,
-        published: args.published,
-        author: args.author
+        ...args
       };
 
       posts.push(post);
 
       return post;
     },
-    createComment(parent, { text, author, post }, ctx, info){
-      const userExists = users.some(user => user.id === author);
-      const postExists = posts.some(el => el.id === post && el.published);
+    createComment(parent, args, ctx, info){
+      const userExists = users.some(user => user.id === args.author);
+      const postExists = posts.some(el => el.id === args.post && el.published);
 
       if (!userExists || !postExists) {
         throw new Error("Unable to find user or post!");
@@ -183,9 +178,7 @@ const resolvers = {
 
       const newPost = {
         id: uuidv4(),
-        text,
-        author,
-        post
+        ...args
       };
 
       comments.push(newPost);
