@@ -4,7 +4,7 @@ import uuidv4 from 'uuid/v4';
 // Scalar types - String, Boolean, Int, Float, ID
 
 // Demo Comments data
-const comments = [{
+let comments = [{
   id: "1",
   text: "Comment 1",
   author: "1",
@@ -14,10 +14,15 @@ const comments = [{
   text: "Comment 2",
   author: "2",
   post: "2"
+}, {
+  id: "3",
+  text: "Comment 2",
+  author: "3",
+  post: "4"
 }];
 
 // Demo User Data
-const users = [{
+let users = [{
   id: '1',
   name: "Eder",
   eder: "eder@example.com",
@@ -33,7 +38,7 @@ const users = [{
 }];
 
 // Demo Posts Data
-const posts = [{
+let posts = [{
   id: "1",
   title: "Titulo 1",
   body: "Post Perrón",
@@ -51,6 +56,12 @@ const posts = [{
   body: "Sin comentarios",
   published: false,
   author: "3"
+}, {
+  id: "4",
+  title: "Titulo 4",
+  body: "Sin comentarios",
+  published: false,
+  author: "1"
 }];
 
 // Type definitions (schema)
@@ -65,6 +76,7 @@ const typeDefs = `
 
   type Mutation {
     createUser(data: CreateUserInput!): User!
+    deleteUser(id: ID!): User!
     createPost(data: CreatePostInput!): Post!
     createComment(data: CreateCommentInput!): Comment!
   }
@@ -102,7 +114,7 @@ const typeDefs = `
     title: String!
     body: String!
     published: Boolean!
-    author: User
+    author: User!
     comments: [Comment!]!
   }
 
@@ -169,6 +181,28 @@ const resolvers = {
       users.push(user);
 
       return user;
+    },
+    deleteUser(parent, args, ctx, info) {
+      const userIndex = users.findIndex(user => user.id === args.id);
+      if (userIndex === -1) {
+        throw new Error('User not found');
+      }
+
+      const deletedUsers = users.splice(userIndex, 1);
+
+      posts = posts.filter((post) => {
+        const match = post.author === args.id;
+
+        if (match) {
+          comments = comments.filter(comment => comment.post !== post.id);
+        }
+
+        return !match
+      });
+
+      comments = comments.filter(comment => comment.author !== args.id);
+
+      return deletedUsers[0];
     },
     createPost(parent, args, ctx, info) {
       const userExists = users.some(user => user.id === args.data.author);
