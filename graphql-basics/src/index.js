@@ -78,7 +78,9 @@ const typeDefs = `
     createUser(data: CreateUserInput!): User!
     deleteUser(id: ID!): User!
     createPost(data: CreatePostInput!): Post!
+    deletePost(id: ID!): Post!
     createComment(data: CreateCommentInput!): Comment!
+    deleteComment(id: ID!): Comment!
   }
 
   input CreateUserInput {
@@ -220,7 +222,23 @@ const resolvers = {
 
       return post;
     },
-    createComment(parent, args, ctx, info){
+    deletePost(parent, args, ctx, info) {
+      const postIndex = posts.findIndex(post => post.id === args.id);
+      console.log("TCL: deletePost -> postIndex", postIndex)
+      
+
+      if (postIndex === -1) {
+        throw new Error("Post dos not exists!");
+      }
+
+      const deletedPost = posts.splice(postIndex, 1);
+
+      comments = comments.filter(comment => comment.post !== args.id);
+
+      return deletedPost[0];
+
+    },
+    createComment(parent, args, ctx, info) {
       const userExists = users.some(user => user.id === args.data.author);
       const postExists = posts.some(el => el.id === args.data.post && el.published);
 
@@ -237,6 +255,18 @@ const resolvers = {
       comments.push(newPost);
 
       return newPost;
+    },
+    deleteComment(parent, args, ctx, info) {
+      const commentIndex = comments.findIndex(comment => comment.id === args.id);
+
+      if (commentIndex === -1) {
+        throw new Error("Comment does not exists!");
+      }
+
+      const deletedComment = comments.splice(commentIndex, 1);
+
+      return deletedComment[0];
+
     }
   },
   Post: {
