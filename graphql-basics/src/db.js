@@ -19,16 +19,16 @@ const comments = [{
 const users = [{
   id: '1',
   name: "Eder",
-  eder: "eder@example.com",
+  email: "eder@example.com",
   age: 31
 }, {
   id: '2',
   name: "Sarah",
-  eder: "sarah@example.com"
+  email: "sarah@example.com"
 }, {
   id: '3',
   name: "Mike",
-  eder: "mike@example.com"
+  email: "mike@example.com"
 }];
 
 // Demo Posts Data
