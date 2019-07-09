@@ -5,6 +5,8 @@ const prisma = new Prisma({
   endpoint: 'http://localhost:4466'
 });
 
+export default prisma;
+
 // prisma.query
 // prisma.mutation
 // prisma.subscription
@@ -19,7 +21,7 @@ const prisma = new Prisma({
   console.log(exists)
 }); */
 
-const createPostForUser = async (authorId, data) => {
+/* const createPostForUser = async (authorId, data) => {
 
   const userExists = await prisma.exists.User({ id: authorId });
 
@@ -59,7 +61,7 @@ const updatePostForUser = async (postId, data) => {
   }, '{ author { id name email posts { id title published } } }' )
 
   return post.author;
-}
+} */
 
 /* createPostForUser("cjxusgotc00910802oehc4so2", {
   title: "Great books to read",
