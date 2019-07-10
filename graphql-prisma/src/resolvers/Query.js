@@ -1,6 +1,6 @@
 const Query = {
-  comments(parent, args, { db }, info){
-    return db.comments;
+  comments(parent, { query }, { prisma }, info){
+    return prisma.query.comments(null, info);
   },
   users(parent, { query }, { prisma }, info) {
     const opArgs = {};
