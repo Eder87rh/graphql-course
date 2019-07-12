@@ -44,15 +44,19 @@ const Mutation = {
       token: jwt.sign({ userId: user.id }, 'thisisasecret')
     }
   },
-  async deleteUser(parent, args, { prisma }, info) {
+  async deleteUser(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request);
+
     return prisma.mutation.deleteUser({ where: {
-      id: args.id 
+      id: userId
     } }, info);
   },
-  async updateUser(parent, args, { prisma }, info) {
+  async updateUser(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request);
+
     return prisma.mutation.updateUser({
       where: {
-        id: args.id
+        id: userId
       },
       data: args.data
     }, info)
@@ -73,7 +77,19 @@ const Mutation = {
       }
     }, info);
   },
-  async deletePost(parent, args, { prisma }, info) {
+  async deletePost(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request);
+
+    const postExists = await prisma.exists.Post({
+      id: args.id,
+      author: {
+        id: userId
+      }
+    });
+
+    if ( !postExists) {
+      throw new Error("Unable to delete post");
+    }
 
     return prisma.mutation.deletePost({
       where: {
@@ -81,10 +97,12 @@ const Mutation = {
       }
     }, info);
   },
-  async updatePost(parent, args, { prisma }, info) {
+  async updatePost(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request);
+
     return prisma.mutation.updatePost({
       where: {
-        id: args.id
+        id: userId
       },
       data: args.data
     }, info);
