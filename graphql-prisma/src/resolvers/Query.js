@@ -18,36 +18,45 @@ const Query = {
     }
 
     return prisma.query.users(opArgs, info);
-
-    /* if (query) {
-      return db.users.filter((user) => user.name.toLowerCase().includes(query.toLowerCase()))
-    } else {
-      return db.users;
-    } */
   },
-  posts(parent, { query }, { prisma }, info) {
-    const opArgs = {}
+  myPosts(parent, { query }, { prisma, request }, info){
+    const userId = getUserId(request);
+
+
+    const opArgs = {
+      where: {
+        author: {
+          id: userId
+        }
+      }
+    }
 
     if (query) {
-      opArgs.where = {
-        OR: [{
-          title_contains: query
-        }, {
-          body_contains: query
-        }]
+      opArgs.where.OR =[{
+        title_contains: query
+      }, {
+        body_contains: query
+      }];
+    }
+
+    return prisma.query.posts(opArgs, info);
+  },
+  posts(parent, { query }, { prisma }, info) {
+    const opArgs = {
+      where: {
+        published: true
       }
+    }
+
+    if (query) {
+      opArgs.where.OR = [{
+        title_contains: query
+      }, {
+        body_contains: query
+      }];
     }
     
     return prisma.query.posts(opArgs, info);
-
-    /* if (query) {
-      return db.posts.filter(({ title, body }) => { 
-        return  title.toLowerCase().includes(query.toLowerCase()) || 
-                body.toLowerCase().includes(query.toLowerCase())
-      });
-    } else {
-      return db.posts;
-    } */
   },
   async me(parent, args, { prisma, request }, info) {
     const userId = getUserId(request, false);
