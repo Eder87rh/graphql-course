@@ -4,7 +4,7 @@
     posts(query: String): [Post!]!
     comments: [Comment!]!
     me: User!
-    getPost: Post!
+    getPost(id: ID!): Post!
   }
 
   type Mutation {
