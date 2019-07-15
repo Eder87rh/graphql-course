@@ -1,11 +1,21 @@
 import getUserId from "../utils/getUserId";
 
 const Query = {
-  comments(parent, { query }, { prisma }, info){
-    return prisma.query.comments(null, info);
+  comments(parent, { query, first, skip, after }, { prisma }, info){
+    const opArgs = {
+      first,
+      skip,
+      after
+    }
+
+    return prisma.query.comments(opArgs, info);
   },
-  users(parent, { query }, { prisma }, info) {
-    const opArgs = {};
+  users(parent, { query, first, skip, after }, { prisma }, info) {
+    const opArgs = {
+      first,
+      skip,
+      after
+    };
 
     if (query) {
       opArgs.where = {
@@ -17,7 +27,7 @@ const Query = {
 
     return prisma.query.users(opArgs, info);
   },
-  myPosts(parent, { query }, { prisma, request }, info){
+  myPosts(parent, { query }, { prisma, request, first, skip, after }, info){
     const userId = getUserId(request);
 
 
@@ -26,7 +36,10 @@ const Query = {
         author: {
           id: userId
         }
-      }
+      },
+      first,
+      skip,
+      after
     }
 
     if (query) {
@@ -39,11 +52,14 @@ const Query = {
 
     return prisma.query.posts(opArgs, info);
   },
-  posts(parent, { query }, { prisma }, info) {
+  posts(parent, { query, first, skip, after }, { prisma }, info) {
     const opArgs = {
       where: {
         published: true
-      }
+      },
+      first,
+      skip,
+      after
     }
 
     if (query) {
@@ -82,7 +98,7 @@ const Query = {
             id: userId
           }
         }]
-      }
+      },
     }, info);
     
     if (posts.length === 0) {
